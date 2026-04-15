@@ -1,7 +1,6 @@
 package ru.kata.spring.boot_security.demo.entity;
 
-import lombok.Data;
-import lombok.ToString;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.hibernate.proxy.HibernateProxy;
@@ -16,8 +15,10 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
 
-@Data
-@ToString(exclude = {"createdAt", "updatedAt"})
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString(exclude = {"createdAt", "updatedAt", "password", "roles"})
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
