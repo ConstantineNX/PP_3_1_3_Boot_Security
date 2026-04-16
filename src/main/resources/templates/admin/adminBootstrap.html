@@ -189,8 +189,7 @@
 
                              <div class="mb-3 text-center">
                                  <label class="form-label">Пароль:</label>
-                                 <input type="tel" th:field="*{password}" class="form-control w-25 mx-auto"><br>
-                                 <span th:errors="*{email}" style="color: red; margin-bottom: 15px"></span>
+                                 <input type="text" th:field="*{password}" class="form-control w-25 mx-auto"><br>
                              </div>
                              <div class="mb-3 text-center">
                                  <label class="form-label">Роль:</label>
@@ -217,77 +216,78 @@
 
 <!-- Модальное окно редактирования -->
 <div class="modal fade" id="editUserModal" tabindex="-1">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editUserModalLabel">Update User</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-
-                <form th:object="${user}" th:action="${isAdmin} ? @{/admin/update} : @{/user/edit}"
-                      method="post" id="editUserForm">
-
-                <div th:if="${error != null and !error.isEmpty()}" style="color: red; margin-bottom: 15px;">
-                    <strong>❌ошибка:</strong> <span th:text="${error}"></span>
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editUserModalLabel">Update User</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
 
-                <div class="modal-body">
-                    <input type="hidden" name="id" id="editUserIdHidden">
-                    <div class="mb-3 text-center">
-                        <label class="form-label">ID</label>
-                        <input type="text" name="id" id="editId" class="form-control w-50 mx-auto text-center" readonly>
+                    <form th:object="${user}" th:action="${isAdmin} ? @{/admin/update} : @{/user/edit}"
+                          method="post" id="editUserForm">
+
+                    <div th:if="${error != null and !error.isEmpty()}" style="color: red; margin-bottom: 15px;">
+                        <strong>❌ошибка:</strong> <span th:text="${error}"></span>
                     </div>
 
-                    <div class="mb-3 text-center">
-                        <label class="form-label">Имя</label>
-                        <input type="text" name="firstName" id="editFirstName" class="form-control w-50 mx-auto text-center">
-                        <span th:errors="*{firstName}" style="color: red; margin-bottom: 15px"></span>
-                    </div>
-                    <div class="mb-3 text-center">
-                        <label class="form-label">Фамилия</label>
-                        <input type="text" name="lastName" id="editLastName" class="form-control w-50 mx-auto text-center">
-                        <span th:errors="*{lastName}" style="color: red; margin-bottom: 15px"></span>
-                    </div>
-                    <div class="mb-3 text-center">
-                        <label class="form-label">Возраст</label>
-                        <input type="number" name="age" id="editAge" class="form-control w-50 mx-auto text-center">
-                        <span th:errors="*{age}" style="color: red; margin-bottom: 15px"></span>
-                    </div>
-                    <div class="mb-3 text-center">
-                        <label class="form-label">Город</label>
-                        <input type="text" name="city" id="editCity" class="form-control w-50 mx-auto text-center">
-                    </div>
-                    <div class="mb-3 text-center">
-                        <label class="form-label">Email</label>
-                        <input type="email" name="email" id="editEmail" class="form-control w-50 mx-auto text-center">
-                        <span th:errors="*{email}" style="color: red; margin-bottom: 15px"></span>
-                    </div>
+                    <div class="modal-body">
+                        <input type="hidden" name="id" id="editUserIdHidden">
+                        <div class="mb-3 text-center">
+                            <label class="form-label">ID</label>
+                            <input type="text" name="id" id="editId" class="form-control w-50 mx-auto text-center" readonly>
+                        </div>
 
-                    <div class="mb-3 text-center">
-                        <label class="form-label">Телефон</label>
-                        <input type="tel" name="phone" id="editPhone" class="form-control w-50 mx-auto text-center">
+                        <div class="mb-3 text-center">
+                            <label class="form-label">Имя</label>
+                            <input type="text" name="firstName" id="editFirstName" class="form-control w-50 mx-auto text-center">
+                            <span th:errors="*{firstName}" style="color: red; margin-bottom: 15px"></span>
+                        </div>
+                        <div class="mb-3 text-center">
+                            <label class="form-label">Фамилия</label>
+                            <input type="text" name="lastName" id="editLastName" class="form-control w-50 mx-auto text-center">
+                            <span th:errors="*{lastName}" style="color: red; margin-bottom: 15px"></span>
+                        </div>
+                        <div class="mb-3 text-center">
+                            <label class="form-label">Возраст</label>
+                            <input type="number" name="age" id="editAge" class="form-control w-50 mx-auto text-center">
+                            <span th:errors="*{age}" style="color: red; margin-bottom: 15px"></span>
+                        </div>
+                        <div class="mb-3 text-center">
+                            <label class="form-label">Город</label>
+                            <input type="text" name="city" id="editCity" class="form-control w-50 mx-auto text-center">
+                        </div>
+                        <div class="mb-3 text-center">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" id="editEmail" class="form-control w-50 mx-auto text-center">
+                            <span th:errors="*{email}" style="color: red; margin-bottom: 15px"></span>
+                        </div>
+
+                        <div class="mb-3 text-center">
+                            <label class="form-label">Телефон</label>
+                            <input type="tel" name="phone" id="editPhone" class="form-control w-50 mx-auto text-center">
+                        </div>
+                        <div class="mb-3 text-center">
+                            <label class="form-label">Роль</label>
+                            <select th:if="${isAdmin}"
+                                    name="roles" id="editRoles" class="form-control w-50 mx-auto text-center">
+                                <option th:each="role : ${allRoles}"
+                                        th:value="${role.id}"
+                                        th:text="${role.name}">
+                                </option>
+                            </select>
+                                    <input th:unless="${isAdmin}" type="text"
+                                           id="editRolesText" class="form-control w-50 mx-auto text-center" readonly
+                                           th:value="${user.roles[0].name.replace('ROLE_', '')}">
+                        </div>
+                        <input type="hidden" name="password" th:value="${user.password}">
                     </div>
-                    <div class="mb-3 text-center">
-                        <label class="form-label">Роль</label>
-                        <select th:if="${isAdmin}"
-                                name="roles" id="editRoles" class="form-control w-50 mx-auto text-center">
-                            <option th:each="role : ${allRoles}"
-                                    th:value="${role.id}"
-                                    th:text="${role.name}">
-                            </option>
-                        </select>
-                                <input th:unless="${isAdmin}" type="text"
-                                       id="editRolesText" class="form-control w-50 mx-auto text-center" readonly
-                                       th:value="${user.roles[0].name.replace('ROLE_', '')}">
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Сохранить</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
                     </div>
-                    <input type="hidden" name="password" th:value="${user.password}">
-                </div>
-                <div class="modal-footer">
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
-                </div>
-            </form>
-        </bl>
+                </form>
+            </bl>
+        </div>
     </div>
 </div>
 

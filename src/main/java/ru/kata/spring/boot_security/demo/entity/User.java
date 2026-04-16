@@ -7,10 +7,7 @@ import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -46,9 +43,11 @@ public class User implements UserDetails {
 
     @Column(name = "email", nullable = false, unique = true, length = 50)
     @NotBlank(message = "Email is required")
+    @Email(message = "Email should be valid")
     private String email;
 
-    @Column(name = "phone", length = 12)
+    @Column(name = "phone")
+    @Size( min = 10, max = 12, message = "номер телефона должен быть в диапозоне 10-12 цифр")
     private String phone;
 
     @CreationTimestamp

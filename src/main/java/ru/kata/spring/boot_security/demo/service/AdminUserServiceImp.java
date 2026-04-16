@@ -97,11 +97,8 @@ public class AdminUserServiceImp implements AdminUserService {
     @Transactional
     @Override
     public User registerUser(User user) {
-        try {
-            findUserByEmail(user.getEmail());
-                throw new EntityExistsException("Пользователь с Email: " + user.getEmail() + " уже существует");
-        } catch (EntityNotFoundException e) {
-//        email свободен, можно регистрировать
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new EntityExistsException("Пользователь с Email: " + user.getEmail() + " уже существует");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         if (user.getEmail().matches("(?i)^(admin|administrator)[0-9]*@.*")) {
