@@ -2,42 +2,30 @@
 table {
     border-collapse: collapse;
     width: 100%;
-    max-width: 1400px;
+    max-width: 1000px;
     margin: 40px auto 0;
     table-layout: fixed;
 }
-th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-    white-space: normal;
-}
-td:nth-child(4),
-td:nth-child(7) {
+td:nth-child(4) {
     white-space: nowrap;
     text-align: right;
 }
-td:nth-child(8),
-td:nth-child(9) {
-    text-align: center;
-}
+
 th {
     overflow-wrap: break-word;
     white-space: normal;
     background-color: gray;
     color: white;
 }
-th:nth-child(1) { width: 2%; }
-th:nth-child(2) { width: 7%; }
-th:nth-child(3) { width: 8%; }
-th:nth-child(4) { width: 6%; }
-th:nth-child(5) { width: 8%; }
-th:nth-child(6) { width: 13%; }
-th:nth-child(7) { width: 11%; }
-th:nth-child(8) { width: 14% }
-th:nth-child(9) { width: 14%; }
-th:nth-child(10) { width: 10%; }
-th:nth-child(11) { width: 7%; }
+th:nth-child(1) { width: 5%; }
+th:nth-child(2) { width: 15%; }
+th:nth-child(3) { width: 15%; }
+th:nth-child(4) { width: 10%; }
+th:nth-child(5) { width: 20%; }
+th:nth-child(6) { width: 15%; }
+th:nth-child(7) { width: 10%; }
+th:nth-child(8) { width: 10% }
+
 tr:nth-child(even) { background-color: darkgray; }
 td:nth-child(10) {
     white-space: nowrap;

@@ -6,12 +6,14 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import ru.kata.spring.boot_security.demo.entity.User;
 import ru.kata.spring.boot_security.demo.service.AdminUserService;
 import javax.persistence.EntityExistsException;
+import javax.validation.Valid;
 
 @Controller
 public class Autocontroller {
@@ -30,7 +32,14 @@ public class Autocontroller {
     }
 
     @PostMapping("/register")
-    public String register(@ModelAttribute User user, Model model) {
+    public String register(@Valid @ModelAttribute User user, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            return "register-form";
+        }
+        if (user.getPassword() == null || user.getPassword().isBlank() || user.getPassword().length() < 3) {
+            model.addAttribute("error", "Please enter your password");
+            return "register-form";
+        }
        try {
            String rawPassword = user.getPassword();
            User user1 = adminUserService.registerUser(user);

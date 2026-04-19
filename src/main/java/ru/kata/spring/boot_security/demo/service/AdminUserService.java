@@ -8,7 +8,7 @@ public interface AdminUserService {
     List<User> findAllUsers();
     User saveUser(User user);
     void deleteUser(Long id);
-    User updateUser(Long id, User user);
+    User updateUser(Long id, User user, Long roleId);
     User findUserById(Long id);
     User findUserByEmail(String email);
     User registerUser(User user);

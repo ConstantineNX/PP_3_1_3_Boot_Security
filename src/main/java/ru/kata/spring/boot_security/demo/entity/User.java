@@ -1,21 +1,23 @@
 package ru.kata.spring.boot_security.demo.entity;
 
-import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.proxy.HibernateProxy;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.*;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Getter
 @Setter
 @NoArgsConstructor
-@ToString(exclude = {"createdAt", "updatedAt", "password", "roles"})
+@ToString(exclude = {"password", "roles"})
 @Entity
 @Table(name = "users")
 public class User implements UserDetails {
@@ -34,31 +36,18 @@ public class User implements UserDetails {
     private String lastName;
 
     @Column(name = "age")
-    @Min(value = 0, message = "возраст не может быть отрицательным или равным 0")
-    @Max(value = 130, message = "возраст не может превышать 120 лет")
+    @Min(value = 0, message = "age cannot be negative or equal to 0")
+    @Max(value = 130, message = "the age limit is 120 years")
     private Integer age;
 
-    @Column(name = "city", length = 30)
-    private String city;
 
     @Column(name = "email", nullable = false, unique = true, length = 50)
     @NotBlank(message = "Email is required")
     @Email(message = "Email should be valid")
     private String email;
 
-    @Column(name = "phone")
-    @Size( min = 10, max = 12, message = "номер телефона должен быть в диапозоне 10-12 цифр")
-    private String phone;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
-
     @Column(name = "password", nullable = false, length = 60)
-    @NotBlank(message = "Password is required")
+    @Pattern(regexp = "^$|.{3,60}", message = "Password must be between 3 and 60 characters")
     private String password;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -69,14 +58,6 @@ public class User implements UserDetails {
     inverseJoinColumns = @JoinColumn(name = "role_id")
     )
     private Set<Role> roles = new LinkedHashSet<>();
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt.truncatedTo(ChronoUnit.SECONDS);
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt != null ? updatedAt.truncatedTo(ChronoUnit.SECONDS) : null;
-    }
 
     @Override
     public boolean equals(Object o) {
@@ -91,7 +72,7 @@ public class User implements UserDetails {
         if (getId() != null & user.getId() != null) {
             return Objects.equals(getId(), user.getId());
         } else {
-            return Objects.equals(email, user.email) && Objects.equals(phone, user.phone);
+            return Objects.equals(email, user.email);
         }
     }
 
@@ -100,7 +81,7 @@ public class User implements UserDetails {
         if (getId() != null) {
             return Objects.hash(getId());
         } else {
-            return Objects.hash(email, phone);
+            return Objects.hash(email);
         }
     }
 

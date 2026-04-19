@@ -9,7 +9,10 @@ import ru.kata.spring.boot_security.demo.repository.RoleRepository;
 import ru.kata.spring.boot_security.demo.repository.UserRepository;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
 
 @Service
 public class AdminUserServiceImp implements AdminUserService {
@@ -17,7 +20,6 @@ public class AdminUserServiceImp implements AdminUserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
-
 
     public AdminUserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder, RoleRepository roleRepository) {
         this.userRepository = userRepository;
@@ -47,13 +49,8 @@ public class AdminUserServiceImp implements AdminUserService {
     @Override
     public User saveUser(User user) {
         Objects.requireNonNull(user);
-        Objects.requireNonNull(user.getFirstName());
-        Objects.requireNonNull(user.getEmail());
-        if (user.getFirstName().trim().isEmpty() || user.getEmail().trim().isEmpty()) {
-            throw new EntityNotFoundException("The user must have at least a name and email address");
-        }
-        if (user.getFirstName().length() < 3 || user.getFirstName().length() > 30) {
-            throw new EntityNotFoundException("The first name must be between 3 and 30 characters");
+        if (user.getPassword() == null || user.getPassword().isBlank()) {
+            throw new EntityNotFoundException("The password must not be blank");
         }
         if (userRepository.existsByEmail(user.getEmail())) {
             throw new EntityExistsException("The user already exists");
@@ -70,16 +67,24 @@ public class AdminUserServiceImp implements AdminUserService {
 
     @Transactional
     @Override
-    public User updateUser(Long id, User user) {
+    public User updateUser(Long id, User user, Long roleId) {
         Objects.requireNonNull(user);
         Objects.requireNonNull(id);
         User user1 = userRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("User with id: " + id));
         user1.setFirstName(user.getFirstName());
         user1.setLastName(user.getLastName());
         user1.setAge(user.getAge());
-        user1.setCity(user.getCity());
         user1.setEmail(user.getEmail());
-        user1.setPhone(user.getPhone());
+        if (user.getPassword() != null && !user.getPassword().isBlank()) {
+            user1.setPassword(passwordEncoder.encode(user.getPassword()));
+        }
+        if (roleId != null) {
+            Role role = roleRepository
+                    .findById(roleId).orElseThrow(() -> new EntityNotFoundException("Role not found with id: " + roleId));
+            Set<Role> roles = new HashSet<>();
+            roles.add(role);
+            user1.setRoles(roles);
+        }
         return userRepository.save(user1);
     }
 

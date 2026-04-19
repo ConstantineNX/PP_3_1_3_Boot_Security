@@ -1,21 +1,18 @@
 package ru.kata.spring.boot_security.demo.controllers;
 
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.kata.spring.boot_security.demo.entity.Role;
 import ru.kata.spring.boot_security.demo.entity.User;
 import ru.kata.spring.boot_security.demo.service.AdminUserService;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 @RequestMapping("/admin")
@@ -32,21 +29,8 @@ public class AdminController {
         return userService.findAllWithRoles();
     }
 
-    @ModelAttribute("user")
-    public User newUser() {
-        return new User();
-    }
-
     public void addAttributes(Model model, String view, User currentUser) {
-        boolean isAdmin = false;
-            for (Role role : currentUser.getRoles()) {
-                if (role.getName().equals("ROLE_ADMIN")) {
-                    isAdmin = true;
-                    break;
-                }
-            }
         model.addAttribute("currentUser", currentUser);
-        model.addAttribute("isAdmin", isAdmin);
         model.addAttribute("view", view);
         model.addAttribute("allRoles", userService.findAllRoles());
     }
@@ -56,6 +40,8 @@ public class AdminController {
                                @RequestParam(required = false) String view,
                                Model model) {
         User freshUser = userService.findUserById(currentUser.getId());
+        model.addAttribute("user", new User());
+        model.addAttribute("newUser", new User());
         addAttributes(model, view, freshUser);
         model.addAttribute("activeTab", "usersTable");
         if ("USER".equals(view)) {
@@ -65,29 +51,25 @@ public class AdminController {
     }
 
     @PostMapping("/save")
-    public String saveUser(@Valid @ModelAttribute User user, BindingResult result,
+    public String saveUser(@Valid @ModelAttribute("newUser") User user, BindingResult result,
                            @RequestParam(required = false) String view,
                            @AuthenticationPrincipal User currentUser,
                            Model model) {
+        model.addAttribute("activeTab", "saveTab");
+        model.addAttribute("newUser", user);
+        model.addAttribute("user", new User());
+        addAttributes(model, view, currentUser);
         if (result.hasErrors()) {
-            addAttributes(model, view, currentUser);
-            model.addAttribute("user", user);
-            model.addAttribute("activeTab", "saveTab");
             return "admin/adminBootstrap";
         }
         try {
             userService.saveUser(user);
             return "redirect:/admin";
-        } catch (IllegalArgumentException | EntityExistsException e) {
-            User freshUser = userService.findUserByEmail(currentUser.getEmail());
-            if (e.getMessage().contains("email") | e.getMessage().contains("exists")) {
-                result.rejectValue("email", null,  "User already exists");
-            } else {
-                model.addAttribute("error", e.getMessage());
-            }
-            addAttributes(model, view, freshUser);
-            model.addAttribute("user", user);
-            model.addAttribute("activeTab", "saveTab");
+        } catch (IllegalArgumentException | EntityNotFoundException e) {
+            model.addAttribute("error", e.getMessage());
+            return "admin/adminBootstrap";
+        } catch (EntityExistsException e) {
+            result.rejectValue("email", null, "User already exists");
             return "admin/adminBootstrap";
         }
     }
@@ -99,23 +81,29 @@ public class AdminController {
     }
 
     @PostMapping("/update")
-    @ResponseBody
-    public ResponseEntity<?> updateUser(@Valid @ModelAttribute User user,
-                                        BindingResult bindingResult) {
+    public String updateUser(@Valid @ModelAttribute User user,
+                                        BindingResult bindingResult,
+                                        @RequestParam(required = false) String view,
+                                        @RequestParam(required = false) Long roleId,
+                                        @AuthenticationPrincipal User currentUser,
+                                        Model model) throws JsonProcessingException {
+        addAttributes(model, view, currentUser);
+        model.addAttribute("newUser", new User());
+        model.addAttribute("activeTab", "usersTable");
         if (bindingResult.hasErrors()) {
-            HashMap<String, String> errors = new HashMap<>();
-            bindingResult.getFieldErrors().stream()
-                    .filter(errorspassword -> !errorspassword.getField().equals("password"))
-                    .forEach(error -> errors.put(error.getField(), error.getDefaultMessage()));
-            if (!errors.isEmpty()) {
-                return ResponseEntity.badRequest().body(errors);
-            }
+                ObjectMapper mapper = new ObjectMapper();
+                String userJson = mapper.writeValueAsString(user);
+                model.addAttribute("userJson", userJson);
+                model.addAttribute("openEditModal", true);
+                return "admin/adminBootstrap";
         }
         try {
-            userService.updateUser(user.getId(), user);
-            return ResponseEntity.ok().build();
+            userService.updateUser(user.getId(), user, roleId);
+            return "redirect:/admin";
         } catch (EntityNotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", e.getMessage()));
+            model.addAttribute("error", e.getMessage());
+            model.addAttribute("openEditModal", true);
+            return "admin/adminBootstrap";
         }
     }
 }

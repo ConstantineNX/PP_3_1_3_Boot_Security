@@ -15,14 +15,17 @@
         <div class="form-group">
             <label>Имя:</label>
             <input type="text" th:field="${user.firstName}" required>
+            <span th:errors="*{firstName}" style="color: red"></span>
         </div>
         <div class="form-group">
             <label>Email:</label>
             <input type="email" th:field="${user.email}" required>
+            <span th:errors="*{email}" style="color: red"></span>
         </div>
         <div class="form-group">
             <label>Пароль:</label>
             <input type="password" th:field="${user.password}" required>
+            <span th:errors="*{password}" style="color: red"></span>
         </div>
         <div class="form-actions">
             <button type="submit">Зарегистрироваться</button>
